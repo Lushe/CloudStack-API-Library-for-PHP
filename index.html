@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="ja">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>CloudStack API Console</title>
+	
+	<script type="text/javascript">
+var scriptpath = "api.php";
+
+function execAPI(){
+	var httpReq;
+	if(window.ActiveXObject){
+		try{
+			httpReq = new ActiveXObject("Msxml2.XMLHTTP");
+		}
+		catch(e){
+			try{
+				httpReq = new ActiveXObject("Microsoft.XMLHTTP");
+			}
+			catch(e2){
+				httpReq = null;
+			}
+		}
+	}
+	else if(window.XMLHttpRequest){
+		httpReq = new XMLHttpRequest();
+	}
+	else{
+		httpReq = null;
+	}
+	
+	httpReq.onreadystatechange = function(){
+		if (httpReq.readyState==4){
+			callback(httpReq)
+		}
+	}
+	httpReq.open("GET", scriptpath+"?"+document.getElementById("inputQuery").value, true);
+	httpReq.send();
+}
+function callback(httpReq){
+	document.getElementById("inputQuery").value = "";
+	document.getElementById("resultView").innerHTML = xmlformat(httpReq.responseText) + document.getElementById("resultView").innerHTML;
+}
+function xmlformat(xml) {
+	var ret = "";
+	xml = xml.replace(/(>)(<)(\/*)/g,"$1\n$2$3");
+	var node;
+	var temp = xml.split("\n");
+	for (var i = 0; i < temp.length; i++) {
+		node = temp[i];
+		ret += node + "<br>";
+	}
+	return ret;
+}
+	</script>
+</head>
+
+<body>
+	<div style="width: 98%; text-align: center;">
+		http://managementserver:8080/client/apt?<span style="text-decoration: underline;">command=...&amp;parameter=...</span>（下線部をテキストボックスに入力し、「API実行」をクリック）<br>
+		<input id="inputQuery" type="text" style="width: 25%;" autocomplete="off">
+		<input id="execButton" type="button" value="API実行" onclick="execAPI();">
+	</div>
+	<br>
+	<div style="width: 98%; border: solid;">API実行結果（XML）<hr> 
+	<div id="resultView"></div>
+	</div>
+</body>
+
+</html>
