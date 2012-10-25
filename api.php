@@ -43,7 +43,7 @@ function CloudStackAPICreateURL($command, $baseurl = config_cloudstack_api_baseu
 	foreach($command as $key => $val){	// 実行したいAPIのコマンドやパラメータを走査し、整形
 		if(strcmp($key, "apiKey") != 0){	// APIキーは最後に追記するため無視
 			if(strcmp($callurl, "") != 0)	$callurl .= "&";	// 2つ目以降のコマンドやパラメータを追記する際にはアンパサンドも追記
-			$callurl .= $key."=".$val;	// キーと値を追記
+			$callurl .= $key."=".urlencodeRFC3986($val);	// キーと値を追記
 		}
 	}
 	return $baseurl.$apipath.$callurl."&apikey=".$api_key."&signature=".CloudStackAPICreateSignature($command);	// シグネチャを作成し、APIを呼び出すURLを生成して返す
